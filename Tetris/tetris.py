@@ -3,18 +3,22 @@
 import wx
 import random
 
-class Tetris(wx.Frame):
 
+class Tetris(wx.Frame):
     def __init__(self, parent):
-        wx.Frame.__init__(self, parent, size=(180, 380),
-            style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER ^ wx.MAXIMIZE_BOX)
+        wx.Frame.__init__(
+            self,
+            parent,
+            size=(180, 380),
+            style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER ^ wx.MAXIMIZE_BOX,
+        )
 
         self.initFrame()
 
     def initFrame(self):
 
         self.statusbar = self.CreateStatusBar()
-        self.statusbar.SetStatusText('0')
+        self.statusbar.SetStatusText("0")
         self.board = Board(self)
         self.board.SetFocus()
         self.board.start()
@@ -95,7 +99,7 @@ class Board(wx.Panel):
 
         if self.isPaused:
             self.timer.Stop()
-            statusbar.SetStatusText('paused')
+            statusbar.SetStatusText("paused")
         else:
             self.timer.Start(Board.Speed)
             statusbar.SetStatusText(str(self.numLinesRemoved))
@@ -120,9 +124,12 @@ class Board(wx.Panel):
                 shape = self.shapeAt(j, Board.BoardHeight - i - 1)
 
                 if shape != Tetrominoes.NoShape:
-                    self.drawSquare(dc,
+                    self.drawSquare(
+                        dc,
                         0 + j * self.squareWidth(),
-                        boardTop + i * self.squareHeight(), shape)
+                        boardTop + i * self.squareHeight(),
+                        shape,
+                    )
 
         if self.curPiece.shape() != Tetrominoes.NoShape:
 
@@ -131,10 +138,12 @@ class Board(wx.Panel):
                 x = self.curX + self.curPiece.x(i)
                 y = self.curY - self.curPiece.y(i)
 
-                self.drawSquare(dc, 0 + x * self.squareWidth(),
+                self.drawSquare(
+                    dc,
+                    0 + x * self.squareWidth(),
                     boardTop + (Board.BoardHeight - y - 1) * self.squareHeight(),
-                    self.curPiece.shape())
-
+                    self.curPiece.shape(),
+                )
 
     def OnKeyDown(self, event):
 
@@ -144,7 +153,7 @@ class Board(wx.Panel):
 
         keycode = event.GetKeyCode()
 
-        if keycode == ord('P') or keycode == ord('p'):
+        if keycode == ord("P") or keycode == ord("p"):
             self.pause()
             return
 
@@ -166,12 +175,11 @@ class Board(wx.Panel):
         elif keycode == wx.WXK_SPACE:
             self.dropDown()
 
-        elif keycode == ord('D') or keycode == ord('d'):
+        elif keycode == ord("D") or keycode == ord("d"):
             self.oneLineDown()
 
         else:
             event.Skip()
-
 
     def OnTimer(self, event):
 
@@ -186,7 +194,6 @@ class Board(wx.Panel):
 
         else:
             event.Skip()
-
 
     def dropDown(self):
 
@@ -204,7 +211,6 @@ class Board(wx.Panel):
         if not self.tryMove(self.curPiece, self.curX, self.curY - 1):
             self.pieceDropped()
 
-
     def pieceDropped(self):
 
         for i in range(4):
@@ -217,7 +223,6 @@ class Board(wx.Panel):
 
         if not self.isWaitingAfterLine:
             self.newPiece()
-
 
     def removeFullLines(self):
 
@@ -240,8 +245,8 @@ class Board(wx.Panel):
 
         for m in rowsToRemove:
             for k in range(m, Board.BoardHeight):
-                for l in range(Board.BoardWidth):
-                        self.setShapeAt(l, k, self.shapeAt(l, k + 1))
+                for p in range(Board.BoardWidth):
+                    self.setShapeAt(p, k, self.shapeAt(p, k + 1))
 
             numFullLines = numFullLines + len(rowsToRemove)
 
@@ -252,7 +257,6 @@ class Board(wx.Panel):
                 self.isWaitingAfterLine = True
                 self.curPiece.setShape(Tetrominoes.NoShape)
                 self.Refresh()
-
 
     def newPiece(self):
 
@@ -268,8 +272,7 @@ class Board(wx.Panel):
             self.curPiece.setShape(Tetrominoes.NoShape)
             self.timer.Stop()
             self.isStarted = False
-            statusbar.SetStatusText('Game over')
-
+            statusbar.SetStatusText("Game over")
 
     def tryMove(self, newPiece, newX, newY):
 
@@ -291,17 +294,40 @@ class Board(wx.Panel):
 
         return True
 
-
     def drawSquare(self, dc, x, y, shape):
 
-        colors = ['#000000', '#CC6666', '#66CC66', '#6666CC',
-                  '#CCCC66', '#CC66CC', '#66CCCC', '#DAAA00']
+        colors = [
+            "#000000",
+            "#CC6666",
+            "#66CC66",
+            "#6666CC",
+            "#CCCC66",
+            "#CC66CC",
+            "#66CCCC",
+            "#DAAA00",
+        ]
 
-        light = ['#000000', '#F89FAB', '#79FC79', '#7979FC',
-                 '#FCFC79', '#FC79FC', '#79FCFC', '#FCC600']
+        light = [
+            "#000000",
+            "#F89FAB",
+            "#79FC79",
+            "#7979FC",
+            "#FCFC79",
+            "#FC79FC",
+            "#79FCFC",
+            "#FCC600",
+        ]
 
-        dark = ['#000000', '#803C3B', '#3B803B', '#3B3B80',
-                 '#80803B', '#803B80', '#3B8080', '#806200']
+        dark = [
+            "#000000",
+            "#803C3B",
+            "#3B803B",
+            "#3B3B80",
+            "#80803B",
+            "#803B80",
+            "#3B8080",
+            "#806200",
+        ]
 
         pen = wx.Pen(light[shape])
         pen.SetCap(wx.CAP_PROJECTING)
@@ -314,15 +340,22 @@ class Board(wx.Panel):
         darkpen.SetCap(wx.CAP_PROJECTING)
         dc.SetPen(darkpen)
 
-        dc.DrawLine(x + 1, y + self.squareHeight() - 1,
-            x + self.squareWidth() - 1, y + self.squareHeight() - 1)
-        dc.DrawLine(x + self.squareWidth() - 1,
-        y + self.squareHeight() - 1, x + self.squareWidth() - 1, y + 1)
+        dc.DrawLine(
+            x + 1,
+            y + self.squareHeight() - 1,
+            x + self.squareWidth() - 1,
+            y + self.squareHeight() - 1,
+        )
+        dc.DrawLine(
+            x + self.squareWidth() - 1,
+            y + self.squareHeight() - 1,
+            x + self.squareWidth() - 1,
+            y + 1,
+        )
 
         dc.SetPen(wx.TRANSPARENT_PEN)
         dc.SetBrush(wx.Brush(colors[shape]))
-        dc.DrawRectangle(x + 1, y + 1, self.squareWidth() - 2,
-        self.squareHeight() - 2)
+        dc.DrawRectangle(x + 1, y + 1, self.squareWidth() - 2, self.squareHeight() - 2)
 
 
 class Tetrominoes(object):
@@ -340,19 +373,19 @@ class Tetrominoes(object):
 class Shape(object):
 
     coordsTable = (
-        ((0, 0),     (0, 0),     (0, 0),     (0, 0)),
-        ((0, -1),    (0, 0),     (-1, 0),    (-1, 1)),
-        ((0, -1),    (0, 0),     (1, 0),     (1, 1)),
-        ((0, -1),    (0, 0),     (0, 1),     (0, 2)),
-        ((-1, 0),    (0, 0),     (1, 0),     (0, 1)),
-        ((0, 0),     (1, 0),     (0, 1),     (1, 1)),
-        ((-1, -1),   (0, -1),    (0, 0),     (0, 1)),
-        ((1, -1),    (0, -1),    (0, 0),     (0, 1))
+        ((0, 0), (0, 0), (0, 0), (0, 0)),
+        ((0, -1), (0, 0), (-1, 0), (-1, 1)),
+        ((0, -1), (0, 0), (1, 0), (1, 1)),
+        ((0, -1), (0, 0), (0, 1), (0, 2)),
+        ((-1, 0), (0, 0), (1, 0), (0, 1)),
+        ((0, 0), (1, 0), (0, 1), (1, 1)),
+        ((-1, -1), (0, -1), (0, 0), (0, 1)),
+        ((1, -1), (0, -1), (0, 0), (0, 1)),
     )
 
     def __init__(self):
 
-        self.coords = [[0,0] for i in range(4)]
+        self.coords = [[0, 0] for i in range(4)]
         self.pieceShape = Tetrominoes.NoShape
 
         self.setShape(Tetrominoes.NoShape)
@@ -460,5 +493,5 @@ def main():
     app.MainLoop()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
